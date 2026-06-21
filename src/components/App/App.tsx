@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useDebouncedCallback } from 'use-debounce';
 import { useQuery } from '@tanstack/react-query';
 
 import css from './App.module.css';
@@ -13,26 +14,39 @@ import { fetchNotes } from '../../services/noteService';
 
 export default function App() {
   const [page, setPage] = useState(1);
-  const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const perPage = 12;
 
+  /* 🔥 debounce */
+  const debounce = useDebouncedCallback((value: string) => {
+    setPage(1);
+    setDebouncedSearch(value);
+  }, 400);
+
   const { data } = useQuery({
-    queryKey: ['notes', page, search],
-    queryFn: () => fetchNotes({ page, perPage, search }),
+    queryKey: ['notes', page, debouncedSearch],
+    queryFn: () =>
+      fetchNotes({
+        page,
+        perPage,
+        search: debouncedSearch,
+      }),
   });
 
   return (
     <div className={css.app}>
       <header className={css.toolbar}>
-        <SearchBox onSearch={setSearch} />
+        <SearchBox onSearch={debounce} />
 
-        <Pagination
-          page={page}
-          setPage={setPage}
-          totalPages={data?.totalPages ?? 0}
-        />
+        {data?.totalPages && data.totalPages > 1 && (
+          <Pagination
+            page={page}
+            setPage={setPage}
+            totalPages={data.totalPages}
+          />
+        )}
 
         <button
           className={css.button}
@@ -42,7 +56,7 @@ export default function App() {
         </button>
       </header>
 
-      <NoteList page={page} search={search} />
+      <NoteList notes={data?.notes ?? []} />
 
       {isModalOpen && (
         <Modal onClose={() => setIsModalOpen(false)}>

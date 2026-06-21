@@ -7,6 +7,7 @@ const api = axios.create({
   baseURL: BASE_URL,
 });
 
+
 api.interceptors.request.use(config => {
   const token = import.meta.env.VITE_NOTEHUB_TOKEN;
 
@@ -17,9 +18,6 @@ api.interceptors.request.use(config => {
   return config;
 });
 
-/* =========================
-   TYPES (API RESPONSES)
-========================= */
 
 export interface FetchNotesResponse {
   notes: Note[];
@@ -42,9 +40,6 @@ export interface DeleteNoteResponse {
   id: string;
 }
 
-/* =========================
-   API FUNCTIONS
-========================= */
 
 export const fetchNotes = async (
   params: FetchNotesParams,
