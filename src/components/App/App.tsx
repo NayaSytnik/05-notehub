@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
-import { useQuery } from '@tanstack/react-query';
-
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import css from './App.module.css';
 
 import SearchBox from '../SearchBox/SearchBox';
@@ -19,7 +18,6 @@ export default function App() {
 
   const perPage = 12;
 
-  /* 🔥 debounce */
   const debounce = useDebouncedCallback((value: string) => {
     setPage(1);
     setDebouncedSearch(value);
@@ -33,6 +31,7 @@ export default function App() {
         perPage,
         search: debouncedSearch,
       }),
+    placeholderData: keepPreviousData,
   });
 
   return (

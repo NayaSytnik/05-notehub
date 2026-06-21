@@ -36,9 +36,6 @@ export interface CreateNoteParams {
   tag: NoteTag;
 }
 
-export interface DeleteNoteResponse {
-  id: string;
-}
 
 
 export const fetchNotes = async (
@@ -58,9 +55,7 @@ export const createNote = async (
   return data;
 };
 
-export const deleteNote = async (
-  id: string,
-): Promise<DeleteNoteResponse> => {
-  const { data } = await api.delete<DeleteNoteResponse>(`/notes/${id}`);
+export const deleteNote = async (id: string): Promise<Note> => {
+  const { data } = await api.delete<Note>(`/notes/${id}`);
   return data;
 };
