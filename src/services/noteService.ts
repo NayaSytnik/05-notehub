@@ -7,7 +7,6 @@ const api = axios.create({
   baseURL: BASE_URL,
 });
 
-
 api.interceptors.request.use(config => {
   const token = import.meta.env.VITE_NOTEHUB_TOKEN;
 
@@ -26,8 +25,8 @@ export interface FetchNotesResponse {
 
 export interface FetchNotesParams {
   page: number;
-  perPage: number;
-  search: string;
+  perPage?: number;
+  search?: string;
 }
 
 export interface CreateNoteParams {
@@ -37,12 +36,17 @@ export interface CreateNoteParams {
 }
 
 
-
-export const fetchNotes = async (
-  params: FetchNotesParams,
-): Promise<FetchNotesResponse> => {
+export const fetchNotes = async ({
+  page,
+  perPage = 12,
+  search = '',
+}: FetchNotesParams): Promise<FetchNotesResponse> => {
   const { data } = await api.get<FetchNotesResponse>('/notes', {
-    params,
+    params: {
+      page,
+      perPage,
+      search,
+    },
   });
 
   return data;
@@ -55,7 +59,9 @@ export const createNote = async (
   return data;
 };
 
-export const deleteNote = async (id: string): Promise<Note> => {
+export const deleteNote = async (
+  id: string,
+): Promise<Note> => {
   const { data } = await api.delete<Note>(`/notes/${id}`);
   return data;
 };
